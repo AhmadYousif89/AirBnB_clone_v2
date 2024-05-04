@@ -3,6 +3,7 @@
 Fabric script that distributes an archive to the web servers
 """
 
+import os
 from os.path import exists
 from fabric.api import put, run, env
 
@@ -13,18 +14,20 @@ def do_deploy(archive_path):
     """distributes an archive to the web servers"""
     if exists(archive_path) is False:
         return False
+
+    filename = os.path.basename(archive_path)
+    tmp_tar = f"/tmp/{filename}"
+    name, _ = os.path.splitext(filename)
+    new_folder = f"/data/web_static/releases/{name}"
     try:
-        file_n = archive_path.split("/")[-1]
-        no_ext = file_n.split(".")[0]
-        path = "/data/web_static/releases/"
-        put(archive_path, '/tmp/')
-        run(f'mkdir -p {path}{no_ext}/')
-        run(f'tar -xzf /tmp/{file_n} -C {path}{ no_ext}/')
-        run(f'rm /tmp/{file_n}')
-        run(f'mv {path}{ no_ext}/web_static/* {path}{ no_ext}/')
-        run(f'rm -rf {path}{no_ext}/web_static')
-        run(f'rm -rf /data/web_static/current')
-        run(f'ln -s {path}{no_ext}/ /data/web_static/current')
+        put(archive_path, tmp_tar)
+        run(f"mkdir -p {new_folder}")
+        run(f"tar -xzf {tmp_tar} -C {new_folder}")
+        run(f"rm {tmp_tar}")
+        run(f"mv {new_folder}/web_static/* {new_folder}/")
+        run(f"rm -rf {new_folder}/web_static")
+        run(f"rm -rf /data/web_static/current")
+        run(f"ln -s {new_folder} /data/web_static/current")
         return True
     except Exception:
         return False
