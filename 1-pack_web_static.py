@@ -9,15 +9,13 @@ from fabric.api import local
 
 
 def do_pack():
-    """
-    making an archive on web_static folder
-    """
-
+    """Creates a new archive of the web_static folder"""
     time = datetime.now()
-    archive = 'web_static_' + time.strftime("%Y%m%d%H%M%S") + '.' + 'tgz'
-    local('mkdir -p versions')
-    create = local('tar -cvzf versions/{} web_static'.format(archive))
-    if create is not None:
-        return archive
-    else:
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    archive_name = f'web_static_{timestamp}.tgz'
+    try:
+        local('mkdir -p versions')
+        local(f'tar -cvzf versions/{archive_name} web_static')
+        return archive_name
+    except Exception:
         return None
