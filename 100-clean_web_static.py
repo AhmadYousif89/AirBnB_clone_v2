@@ -20,14 +20,15 @@ def do_clean(number=0):
     etc.
     """
     number = 1 if int(number) == 0 else int(number)
-
-    archives = sorted(os.listdir("versions"))
+    archives_path = "versions"
+    archives = sorted(os.listdir(archives_path))
     [archives.pop() for i in range(number)]
-    with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
+    with lcd(archives_path):
+        [local(f"rm ./{archive}") for archive in archives]
 
-    with cd("/data/web_static/releases"):
+    releases_path = "/data/web_static/releases"
+    with cd(releases_path):
         archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
+        archives = [archive for archive in archives if "web_static_" in archive]
         [archives.pop() for i in range(number)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+        [run(f"rm -rf ./{archive}") for archive in archives]
