@@ -4,12 +4,11 @@
 $nginx_conf = "server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    add_header X-Served-By ${hostname};
+    add_header X-Served-By ${HOSTNAME};
     root   /var/www/html;
     index  index.html index.htm;
     location /hbnb_static {
-        alias /data/web_static/current;
-        index index.html index.htm;
+        alias /data/web_static/current/;
     }
     location /redirect_me {
         return 301 https://github.com/AhmadYousif89;
@@ -48,7 +47,7 @@ package { 'nginx':
 
 -> file { '/data/web_static/releases/test/index.html':
   ensure  => 'file',
-  content => "Holberton School Puppet\n",
+  content => "Test page\n",
 }
 
 -> file { '/data/web_static/current':
@@ -56,29 +55,21 @@ package { 'nginx':
   target => '/data/web_static/releases/test',
 }
 
--> exec { 'chown -R ubuntu:ubuntu /data/':
-  path => '/usr/bin/:/usr/local/bin/:/bin/',
-}
-
-file { '/var/www':
-  ensure => 'directory',
-}
-
--> file { '/var/www/html':
-  ensure => 'directory',
+-> exec { 'chown -hR ubuntu:ubuntu /data/':
+  path => '/bin/:/usr/bin/:/usr/local/bin/',
 }
 
 -> file { '/var/www/html/index.html':
   ensure  => 'file',
-  content => "Holberton School Nginx\n",
+  content => "Welcome page 👋\n",
 }
 
 -> file { '/var/www/html/404.html':
   ensure  => 'file',
-  content => "Ceci n'est pas une page\n",
+  content => "Page Not Found!\n",
 }
 
--> file { '/etc/nginx/sites-available/default':
+-> file { '/etc/nginx/sites-enabled/default':
   ensure  => 'file',
   content => $nginx_conf,
 }
