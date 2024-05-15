@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 Fabric script to genereate tgz archive
-execute: fab -f 1-pack_web_static.py do_pack
+Usage: fab -f 1-pack_web_static.py do_pack
 """
 
 from datetime import datetime
@@ -12,10 +12,13 @@ def do_pack():
     """Creates a new archive of the web_static folder"""
     time = datetime.now()
     timestamp = time.strftime("%Y%m%d%H%M%S")
-    archive_name = f'web_static_{timestamp}.tgz'
+    src_folder = 'web_static'
+    dest_folder = 'versions'
+    archive_name = f'{src_folder}_{timestamp}.tgz'
+    save_path = f'{dest_folder}/{archive_name}'
     try:
-        local('mkdir -p versions')
-        local(f'tar -cvzf versions/{archive_name} web_static')
+        local(f'mkdir -p {dest_folder}')
+        local(f'tar -cvzf {save_path} {src_folder}')
         return archive_name
     except Exception:
         return None
