@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Script that starts a Flask web app with routes: 
+Script that starts a Flask web app with routes:
 >>  '/' | '/hbnb' | '/c/<text>' | '/python/<text>' | '/number/<n>'
 """
 from flask import Flask
