@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Script that starts a Flask web app with routes: 
->>  '/' | '/hbnb' | '/c/<text>' | '/python/<text>' 
+Script that starts a Flask web app with routes:
+>>  '/' | '/hbnb' | '/c/<text>' | '/python/<text>'
 >>  '/number/<n>' | '/number_template/<n>'
 """
 from flask import Flask, render_template
