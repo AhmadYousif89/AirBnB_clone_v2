@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Module defining a base class for all models in the application."""
-
 import os
 import uuid
 from datetime import datetime
@@ -9,10 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 HBNB_TYPE_STORAGE = os.getenv('HBNB_TYPE_STORAGE')
 
+Base = object
 if HBNB_TYPE_STORAGE == 'db':
     Base = declarative_base()
-else:
-    Base = object
 
 
 class BaseModel:
@@ -37,6 +35,9 @@ class BaseModel:
             **kwargs: Arbitrary keyword arguments.
         """
         # from models import storage
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = self.created_at
 
         if kwargs:
             for key, value in kwargs.items():
@@ -45,12 +46,13 @@ class BaseModel:
                 if key == "created_at" or key == "updated_at":
                     value = datetime.fromisoformat(value)
                 setattr(self, key, value)
-            del kwargs['__class__']
-        else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = self.created_at
-            # storage.new(self)
+            if '__class__' in kwargs:
+                del kwargs['__class__']
+        # else:
+        #     self.id = str(uuid.uuid4())
+        #     self.created_at = datetime.now()
+        #     self.updated_at = self.created_at
+        # storage.new(self)
 
     def __str__(self):
         """Returns a string representation of the BaseModel instance."""
