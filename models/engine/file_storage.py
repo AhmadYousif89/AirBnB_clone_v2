@@ -77,11 +77,20 @@ class FileStorage:
         (If the file doesn't exist, no exception should be raised)
         """
         try:
-            with open(self.__file_path, 'r') as f:
-                _dict = json.loads(f.read())
+            with open(self.__file_path) as f:
+                result = f.read()
+                if not result:
+                    return
+                _dict = json.loads(result)
                 self.__objects = {
                     key: classes[key.split('.')[0]](**obj)
                     for key, obj in _dict.items()
                 }
-        except FileNotFoundError:
+        except IOError:
             pass
+
+    def close(self):
+        """
+        Calls reload() method for deserializing the JSON file to objects
+        """
+        self.reload()
