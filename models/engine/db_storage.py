@@ -51,6 +51,7 @@ class DBStorage:
         """
         conn = f'mysql+mysqldb://{USER}:{PWD}@{HOST}/{DB}'
         self.__engine = create_engine(conn, pool_pre_ping=True)
+        self.__session = scoped_session(sessionmaker(bind=self.__engine))
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
@@ -67,12 +68,13 @@ class DBStorage:
             dict: keys are constructed as `{class_name}.{object_id}`
                   and values are the corresponding model objects.
         """
-        if cls:
+        if cls and self.__session is not None:
             objs = self.__session.query(cls).all()
         else:
             objs = [
                 obj
                 for cls in classes.values()
+                if self.__session is not None
                 for obj in self.__session.query(cls).all()
             ]
 
@@ -85,13 +87,15 @@ class DBStorage:
         Args:
             obj (object): The model object to be added to the database.
         """
-        self.__session.add(obj)
+        if self.__session is not None:
+            self.__session.add(obj)
 
     def save(self):
         """
         Commits the current session to the database, persisting any changes.
         """
-        self.__session.commit()
+        if self.__session is not None:
+            self.__session.commit()
 
     def delete(self, obj=None):
         """
@@ -103,7 +107,8 @@ class DBStorage:
         """
         if obj is None:
             return
-        self.__session.delete(obj)
+        if self.__session is not None:
+            self.__session.delete(obj)
 
     def reload(self):
         """
@@ -118,5 +123,10 @@ class DBStorage:
         self.__session = Session
 
     def close(self):
-        """Closes the current"""
-        self.reload()
+        """
+        Removes the current session and closes the database connection.
+        """
+        if self.__session is not None:
+            self.__session.remove()
+        if self.__engine is not None:
+            self.__engine.dispose()
