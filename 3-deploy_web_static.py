@@ -1,25 +1,30 @@
 #!/usr/bin/python3
 """
 Fabric script that creates and uploads an archive to the web servers
-execute: fab -f 2-do_deploy_web_static.py -i <ssh_key>
+Usage: fab -f 3-deploy_web_static.py deploy -i ssh_private_key
 """
 
-from os.path import exists
 from datetime import datetime
-from fabric.api import env, local, put, run
+from os.path import exists, join
+from fabric.api import env, local, put, run, runs_once
 
 env.user = 'ubuntu'
-env.hosts = ['34.224.62.175', '54.84.8.54']
+env.hosts = ['34.224.62.175', '54.157.181.100']
+
+src_folder = 'web_static'
+dest_folder = 'versions'
 
 
+@runs_once
 def do_pack():
     """making an archive on web_static folder"""
     time = datetime.now()
     timestamp = time.strftime("%Y%m%d%H%M%S")
-    archive_name = f'web_static_{timestamp}.tgz'
+    archive_name = f'{src_folder}_{timestamp}.tgz'
+    save_path = join(dest_folder, archive_name)
     try:
-        local('mkdir -p versions')
-        local(f'tar -cvzf versions/{archive_name} web_static')
+        local(f'mkdir -p {dest_folder}')
+        local(f'tar -cvzf {save_path} {src_folder}')
         return archive_name
     except Exception:
         return None
@@ -27,7 +32,7 @@ def do_pack():
 
 def do_deploy(archive_path):
     """Uploads an archive to the web servers"""
-    archive_fullpath = f'versions/{archive_path}'
+    archive_fullpath = f'{dest_folder}/{archive_path}'
     if not exists(archive_fullpath):
         return False
 
@@ -53,5 +58,6 @@ def deploy():
     """creates and deploy a new web_static release to the web servers"""
     archive_path = do_pack()  # web_static_20240505004540.tgz
     if archive_path is None:
+        print("Failed to create the archive")
         return False
     return do_deploy(archive_path)
