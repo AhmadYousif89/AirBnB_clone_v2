@@ -16,7 +16,7 @@ def do_clean(keep=0):
     Args:
         keep (int): The number of archives to keep.
     If (keep) is 0 or 1, it will keep only the most recent archive.
-    If (keep) is 2 or more, it will keep the most recent (number of keep) archives.
+    If (keep) is 2 or more, it will keep the most recent (n of keep) archives.
     """
     archives_path = "versions"
     keep = 1 if keep == 0 else keep
