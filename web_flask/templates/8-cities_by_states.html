@@ -2,9 +2,10 @@
 
 {% block BODY %}
 <H1>States</H1>
-<UL>
+<UL class="main-list">
     {% for state in states | sort(attribute='name') %}
-    <LI>{{ state.id }}: <B>{{ state.name }}</B>
+    <LI>
+        <P>{{ state.id }}: <B>{{ state.name }}</B></P>
         <UL>
             {% for city in state.cities | sort(attribute='name') %}
             <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
