@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block BODY %}
+{% if id %}
+<H1>State: {{ state.name }} </H1>
+<H3>Cities:</H3>
+<UL class="city-list">
+    {% for city in state.cities | sort(attribute='name') %}
+    <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
+    {% endfor %}
+</UL>
+{% else %}
+<H1>States</H1>
+<UL class="list">
+    {% for state in states | sort(attribute='name') %}
+    <LI>{{ state.id }}: <B>{{ state.name }}</B></LI>
+    {% endfor %}
+</UL>
+{% endif %}
+{% endblock BODY %}
