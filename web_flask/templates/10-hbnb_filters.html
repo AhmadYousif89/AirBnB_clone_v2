@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block LINKS %}
+<LINK rel="shortcut icon" href="../static/images/icon.png" type="image/x-icon">
+{% endblock LINKS %}
+
+{% block STYLE_SHEETS %}
+<LINK rel="stylesheet" href="../static/styles/4-common.css">
+<LINK rel="stylesheet" href="../static/styles/3-header.css">
+<LINK rel="stylesheet" href="../static/styles/6-filters.css">
+<LINK rel="stylesheet" href="../static/styles/3-footer.css">
+{% endblock STYLE_SHEETS %}
+
+{% block BODY %}
+<HEADER>
+    <DIV class="logo"></DIV>
+</HEADER>
+
+<DIV class="container">
+    <SECTION class="filters">
+        <DIV class="locations">
+            <H3>States</H3>
+            &nbsp;
+            <UL class="popover">
+                {% for state in states | sort(attribute='name') %}
+                <LI>
+                    <H2>{{ state.name }}:</H2>
+                    {% for city in state.cities | sort(attribute='name') %}
+                    <P>{{ city.name }}</P>
+                    {% endfor %}
+                </LI>
+                {% endfor %}
+            </UL>
+        </DIV>
+        <DIV class="amenities">
+            <H3>Amenities</H3>
+            &nbsp;
+            <UL class="popover">
+                {% for amenity in amenities | sort(attribute='name') %}
+                <LI>
+                    <INPUT type="checkbox" id="{{ amenity.name }}" name="amenity" value="{{ amenity.id }}">
+                    <LABEL for="{{ amenity.name }}">{{ amenity.name }}</LABEL>
+                </LI>
+                {% endfor %}
+            </UL>
+        </DIV>
+        <BUTTON>Search</BUTTON>
+    </SECTION>
+</DIV>
+
+<FOOTER>
+    <P>Best School</P>
+</FOOTER>
+{% endblock BODY %}
