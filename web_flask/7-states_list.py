@@ -18,9 +18,8 @@ def teardown(exception):
 @app.route('/states_list', strict_slashes=False)
 def states_list():
     """Displays an HTML page with a list of all State objects"""
-    states_dict = storage.all("State")
-    state_list = [states_dict[state] for state in states_dict]
-    return render_template('7-states_list.html', states=state_list)
+    states = storage.all("State").values()
+    return render_template('8-cities_by_states.html', states=states)
 
 
 if __name__ == '__main__':
