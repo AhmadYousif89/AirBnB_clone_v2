@@ -51,7 +51,6 @@ class DBStorage:
         """
         conn = f'mysql+mysqldb://{USER}:{PWD}@{HOST}/{DB}'
         self.__engine = create_engine(conn, pool_pre_ping=True)
-        self.__session = scoped_session(sessionmaker(bind=self.__engine))
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
