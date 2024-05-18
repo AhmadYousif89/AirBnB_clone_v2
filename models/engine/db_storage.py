@@ -56,7 +56,9 @@ class DBStorage:
 
     def all(self, cls=None):
         """
-        Retrieves all instances of a given model class from the database.
+        Retrieves all instances of a class from the database.
+        if cls is provided, retrieves all instances of that class.
+        Otherwise, retrieves all instances of all registered classes.
 
         Args:
             cls (class, optional): The model class to retrieve instances for.
@@ -67,17 +69,16 @@ class DBStorage:
             dict: keys are constructed as `{class_name}.{object_id}`
                   and values are the corresponding model objects.
         """
-        if cls and self.__session is not None:
-            objs = self.__session.query(cls).all()
-        else:
-            objs = [
-                obj
-                for cls in classes.values()
-                if self.__session is not None
-                for obj in self.__session.query(cls).all()
-            ]
+        _dict = {}
+        for clss in classes:
+            if cls is None or cls is classes[clss] or cls is clss:
+                if self.__session is not None:
+                    objs = self.__session.query(classes[clss]).all()
+                _dict = {
+                    f"{obj.__class__.__name__}.{obj.id}": obj for obj in objs
+                }
 
-        return {f"{obj.__class__.__name__}.{obj.id}": obj for obj in objs}
+        return _dict
 
     def new(self, obj):
         """
