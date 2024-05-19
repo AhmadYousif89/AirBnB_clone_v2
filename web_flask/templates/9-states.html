@@ -1,19 +1,19 @@
 {% extends 'layout.html' %}
 
 {% block BODY %}
-{% if state_id %}
-<H1>State: {{ states.name }}</H1>
-<H3>Cities</H3>
-<UL class="city-list">
-    {% for city in states.cities|sort(attribute='name') %}
-    <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
+{% if not state_id %}
+<H1>States</H1>
+<UL>
+    {% for state in states|sort(attribute='name') %}
+    <LI>{{ state.id }}: <B>{{ state.name }}</B></LI>
     {% endfor %}
 </UL>
 {% else %}
-<H1>States</H1>
-<UL class="list">
-    {% for state in states|sort(attribute='name') %}
-    <LI>{{ state.id }}: <B>{{ state.name }}</B></LI>
+<H1>State: {{ states.name }}</H1>
+<H3>Cities</H3>
+<UL>
+    {% for city in states.cities|sort(attribute='name') %}
+    <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
     {% endfor %}
 </UL>
 {% endif %}
