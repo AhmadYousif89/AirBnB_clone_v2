@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block BODY %}
-{% if state %}
+{% if state_id and state %}
 <H1>State: {{ state.name }}</H1>
 <H3>Cities</H3>
 <UL>
@@ -9,7 +9,7 @@
     <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
     {% endfor %}
 </UL>
-{% elif states %}
+{% elif states and not state_id %}
 <H1>States</H1>
 <UL>
     {% for state in states|sort(attribute='name') %}
