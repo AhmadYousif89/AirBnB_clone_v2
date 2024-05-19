@@ -20,10 +20,15 @@ def teardown(exception):
 @app.route('/states/<state_id>', strict_slashes=False)
 def states(state_id=None):
     """Displays a list of all States or Cities in a State"""
-    states = storage.all("State")
-    if state_id is not None:
-        state_id = f"State.{state_id}"
-    return render_template('9-states.html', states=states, state_id=state_id)
+    states = list(storage.all("State").values())
+    if state_id:
+        for state in states:
+            if state_id == state.id:
+                return render_template(
+                    '9-states.html', states=state, state_id=state_id
+                )
+
+    return render_template('9-states.html', states=states)
 
 
 if __name__ == '__main__':
