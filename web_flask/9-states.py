@@ -28,7 +28,7 @@ def states(state_id=None):
                     '9-states.html', states=state, state_id=state_id
                 )
 
-    return render_template('9-states.html', states=states)
+    return render_template('9-states.html', states=states, state_id=state_id)
 
 
 if __name__ == '__main__':
