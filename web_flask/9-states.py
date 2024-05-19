@@ -2,7 +2,7 @@
 """
 Script that starts a Flask web application with a route:
 >>  '/states' that displays a list of all States
->>  '/states/<id>' that displays a list of all Cities in a State
+>>  '/states/<state_id>' that displays a list of all Cities in a State
 """
 from flask import Flask, render_template
 from models import storage
@@ -17,16 +17,15 @@ def teardown(exception):
 
 
 @app.route('/states', strict_slashes=False)
-@app.route('/states/<id>', strict_slashes=False)
-def states(id=None):
-    """Displays a list of all States"""
-    if id:
-        key = f"State.{id}"
-        if key in storage.all("State"):
-            state = storage.all("State")[key]
-            return render_template('9-states.html', state=state, id=id)
-    states = storage.all("State").values()
-    return render_template('9-states.html', states=states)
+@app.route('/states/<state_id>', strict_slashes=False)
+def states(state_id=None):
+    """Displays a list of all States or Cities in a State"""
+    key = f"State.{state_id}"
+    states = storage.all("State")
+    state = states.get(key)
+    if state_id and state:
+        return render_template('9-states.html', state=state, state_id=state_id)
+    return render_template('9-states.html', states=states.values())
 
 
 if __name__ == '__main__':
