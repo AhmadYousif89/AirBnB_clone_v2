@@ -25,11 +25,13 @@
 		box-shadow: 3px 3px 5px var(--light-gray-400);
 
 		h2 {
-			grid-row: 1;
-			grid-column: 2;
 			font-size: var(--fs-800);
-			min-width: 100%;
+			max-width: 20ch;
 			text-align: center;
+			text-wrap: balance;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: clip;
 		}
 
 		.price_by_night {
@@ -44,6 +46,7 @@
 			border-radius: 50%;
 			width: 90px;
 			height: 90px;
+			background-color: #fff;
 		}
 
 		.information {
@@ -78,13 +81,10 @@
 
 		.description {
 			max-width: 50ch;
-			text-wrap: balance;
 		}
 
 		.amenities {
-			display: grid;
 			margin-top: 40px;
-			grid-template-columns: 1fr 1fr;
 
 			.title {
 				grid-column: span 2;
@@ -98,7 +98,7 @@
 				display: grid;
 				gap: 10px;
 				margin-top: 20px;
-				width: 100%;
+				grid-template-columns: 1fr 1fr;
 			}
 
 			.amenity {

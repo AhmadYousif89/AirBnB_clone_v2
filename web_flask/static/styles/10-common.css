@@ -10,7 +10,7 @@
 
 :root {
 	/* COLORS */
-	--light-red: #ff5a5f;
+	--light-red: #ff5A5f;
 	--light-gray-100: #fafafa;
 	--light-gray-400: #ddd;
 	--light-gray-500: #ccc;
@@ -21,7 +21,6 @@
 	--fs-400: 16px;
 	--fs-500: 18px;
 	--fs-600: 20px;
-	--fs-700: 25px;
 	--fs-800: 30px;
 }
 
@@ -31,6 +30,7 @@ body {
 	min-height: 100vh;
 	color: var(--dark-gray);
 	font-family: Circular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	line-height: calc(1em + 0.5rem);
 	font-size: var(--fs-300);
 }
 
@@ -47,16 +47,11 @@ button {
 
 img,
 svg {
-	display: block;
 	max-width: 100%;
 }
 
 .container {
-	max-width: 1410px;
+	max-width: 1000px;
 	margin-block: 30px;
 	margin-inline: auto;
-
-	@media (width < 1410px) {
-		margin-inline: 2rem;
-	}
 }
