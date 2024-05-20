@@ -21,7 +21,11 @@ def hbnb_filters():
     states = storage.all("State").values()
     amenities = storage.all("Amenity").values()
     return render_template(
-        '10-hbnb_filters.html', styles=True, states=states, amenities=amenities
+        '10-hbnb_filters.html',
+        stylesheets=True,
+        states=states,
+        amenities=amenities,
+        css_file_prefix='10-',
     )
 
 
