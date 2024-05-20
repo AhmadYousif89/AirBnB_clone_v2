@@ -10,6 +10,7 @@
     <TITLE>HBNB</TITLE>
     {% endif %}
     <LINK rel="shortcut icon" href="../static/images/icon.png" type="image/x-icon">
+    {% set css_file_prefix = css_file_prefix if css_file_prefix is defined else '' %}
     <LINK rel="stylesheet" href="{{ url_for('static', filename='styles/' + css_file_prefix + 'common.css') }}">
     <LINK rel="stylesheet" href="{{ url_for('static', filename='styles/' + css_file_prefix + 'header.css') }}">
     <LINK rel="stylesheet" href="{{ url_for('static', filename='styles/' + css_file_prefix + 'filters.css') }}">
