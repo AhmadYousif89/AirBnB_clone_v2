@@ -8,10 +8,17 @@ on the instances through the console.
 The console offers the following functionalities:
 
 - Creating new instances of various classes.
+> create User | User.create()
+- Display all available instances.
+> all | all User
 - Showing information about existing instances based on class and id.
+> show User <id> | User.show(<id>)
 - Updating existing instances by adding or modifying their attributes.
+> update User <id> (args | kwargs)| User.update(<id>, (args | kwargs))
 - Deleting existing instances from the storage.
+> destroy User <id> | User.destroy(<id>)
 - Counting the number of instances for each class.
+> count all | count User
 """
 import cmd
 import sys
@@ -30,22 +37,22 @@ from models.review import Review
 class ErrorMessages(TypedDict):
     no_method: str
     no_cls: str
-    no_cls_name: str
+    no_c_name: str
     no_obj_id: str
     no_obj: str
     no_attr_name: str
-    no_attr_val: str
+    no_attr_value: str
     no_json: str
 
 
 error_messages: ErrorMessages = {
     "no_method": "** invalid method",
     "no_cls": "** class doesn't exist **",
-    "no_cls_name": "** class name missing **",
+    "no_c_name": "** class name missing **",
     "no_obj_id": "** instance id missing **",
     "no_obj": "** no instance found **",
     "no_attr_name": "** attribute name missing **",
-    "no_attr_val": "** value missing **",
+    "no_attr_value": "** value missing **",
     "no_json": "** invalid json object **",
 }
 
@@ -105,7 +112,7 @@ class HBNBCommand(cmd.Cmd):
         -   line (str): The user input command string.
 
         Example:
-        >>>> (hbnb) User.update(some_user_id, {"name": "abc"})
+        >> (hbnb) User.update(some_user_id, {"name": "abc"})
         >> 'update User 7993cdd5-1218-44dc-813e-97594bc228ba {"name": "abc"}'
         """
         allowed_methods = [
@@ -141,7 +148,7 @@ class HBNBCommand(cmd.Cmd):
                 _id = pline[0].strip("\"'")  # get instance id
                 pline = pline[2].strip()  # get args i.e attributes
                 if pline:
-                    if (  # determine if attributes are in kwargs formate
+                    if (  # determine if attributes are in kwargs format
                         pline[0] == '{'
                         and pline[-1] == '}'
                         and type(eval(pline)) is dict
@@ -194,46 +201,51 @@ class HBNBCommand(cmd.Cmd):
         Raises:
         -   None (prints error messages to the console).
         """
-        args = validate(arg, create_only=True)
+        args = validate(arg, get_params=True)
         if not args:
             return
 
         c_name = args["c_name"]  # get class name
 
-        # class_dict = classes[c_name].__dict__
-        # allowed_params = [
-        #     attr
-        #     for attr in class_dict
-        #     if not callable(class_dict[attr]) and not attr.startswith("__")
-        # ]
+        obj = classes[c_name]()
+        # Extra feature:
+        obj_dict = dir(obj)
+        allowed_params = [
+            attr
+            for attr in obj_dict
+            if not callable(getattr(obj, attr))  # Exclude methods
+            and not isinstance(
+                getattr(type(obj), attr, None), property
+            )  # Exclude properties
+            and not attr.startswith("__")  # Exclude private attributes
+        ]
 
         params = args["params"].split()  # [<key>="<value>", ...]
 
-        new_obj = classes[c_name]()
         for param in params:
-            if '=' not in param:
+            if '=' not in param:  # Skip this checks and just create the object
                 continue
             param = param.split("=")
             param_name = param[0]
-            # checker error here 👇👇👇
-            # if param_name not in allowed_params:
-            #     print(f"** invalid param for class {c_name}: <{param_name}>")
-            #     print(f"** available params: {allowed_params}")
-            #     return
+            # 💀 Potential checker error here 👇
+            if param_name not in allowed_params:
+                print(f"** invalid param for class {c_name}: <{param_name}>")
+                print(f"** available params: {allowed_params}")
+                return
             param_value = (
                 param[1].strip("\"'").replace('"', '').replace('_', ' ')
                 if len(param) > 1
                 else ''
             )
             if not param_value:
-                print(error_messages["no_attr_val"])
+                print(error_messages["no_attr_value"])
                 return
             if param_name in types:
                 param_value = types[param_name](param_value)
-            new_obj.__dict__.update({param_name: param_value})
+            obj.__dict__.update({param_name: param_value})
 
-        new_obj.save()
-        print(new_obj.id)
+        obj.save()
+        print(obj.id)
 
     def help_create(self):
         """Help information for the create method"""
@@ -294,9 +306,9 @@ class HBNBCommand(cmd.Cmd):
         c_name = args["c_name"]
         obj_id = args["obj_id"]
 
-        all_objs = storage.all()
+        objs = storage.all()
         key = f"{c_name}.{obj_id}"
-        removed_obj = all_objs.pop(key, None)
+        removed_obj = objs.pop(key, None)
         if removed_obj is None:
             print(error_messages["no_obj"])
             return
@@ -354,8 +366,8 @@ class HBNBCommand(cmd.Cmd):
             return
 
         nm_instances = 0
-        all_objs = storage.all()
-        for obj in all_objs.values():
+        objs = storage.all()
+        for obj in objs.values():
             nm_instances += (
                 1
                 if arg == "all" or obj.__class__.__name__ == args["c_name"]
@@ -373,21 +385,17 @@ class HBNBCommand(cmd.Cmd):
 
         Args:
         -   arg (str): The user input argument (command to be interpreted).
-        -   check_id (bool):
-                If True, checks if an instance id is provided.
-                (defaults to True)
 
         Raises:
         -   None (prints error messages to the console).
         """
-
         args = validate(arg, check_id=True)
         if args is None:
             return
 
         c_id = args["obj_id"]
         c_name = args["c_name"]
-        args = args["attributes"]
+        attributes = args["attributes"][0]
 
         key = f"{c_name}.{c_id}"
 
@@ -395,47 +403,44 @@ class HBNBCommand(cmd.Cmd):
             print(error_messages["no_obj"])
             return
 
-        attr_name = ''
-        attr_val = ''
-        args = args[0]
+        obj = storage.all()[key]
+
         # determine if attributes are kwargs or args
-        if '{' in args and '}' in args and type(eval(args)) is dict:
-            kwargs = eval(args)
-            args = []
-            for k, v in kwargs.items():
-                args.append(k)
-                args.append(v)
-        else:  # attributes are in args formate: ('age', 20) or ("name" xxx)
-            args = args.split()
-            new_args = []
-            for i, attr_name in enumerate(args):
-                attr_name = attr_name.strip("\"',")
-                if i % 2 == 0:
-                    attr_value = (
-                        args[i + 1].strip("\"',") if len(args) > i + 1 else ""
-                    )
-                if attr_name not in new_args or attr_value not in new_args:
-                    new_args.extend([attr_name, attr_value])
-            args = ["", ""] if len(new_args) == 0 else new_args
-        # get the target object with its key
-        new_obj = storage.all()[key]
-        # iterate through each attr name and value
-        for i, attr_name in enumerate(args):
+        if (
+            '{' in attributes
+            and '}' in attributes
+            and type(eval(attributes)) is dict
+        ):  # attributes are in kwargs format e.g {"key": "value", ...}
+            args = eval(attributes)
+            attributes = [k_v for pairs in args.items() for k_v in pairs]
+        else:  # attributes are in args format e.g "key", "value" ...
+            attributes = attributes.split()
+
+        for i, attr_name in enumerate(attributes or [""]):
+            attr_name = (
+                attr_name.strip("\"',") if type(attr_name) is str else ""
+            )
             if i % 2 == 0:
-                attr_val = args[i + 1]
+                attr_value = (
+                    (
+                        attributes[i + 1].strip("\"',")  # Value is Str
+                        if type(attributes[i + 1]) is str
+                        else attributes[i + 1]  # Value is Int
+                    )
+                    if len(attributes) > i + 1  # Value exist
+                    else ""
+                )
                 if not attr_name:
                     print(error_messages["no_attr_name"])
                     return
-                if not attr_val:
-                    print(error_messages["no_attr_val"])
+                if not attr_value:
+                    print(error_messages["no_attr_value"])
                     return
-                # type cast some special attributes
                 if attr_name in types:
-                    attr_val = types[attr_name](attr_val)
-                # update the object dictionary
-                new_obj.__dict__.update({attr_name: attr_val})
+                    attr_value = types[attr_name](attr_value)
+                obj.__dict__[attr_name] = attr_value
         # save to storage
-        new_obj.save()
+        obj.save()
 
     def help_update(self):
         """Help information for the update class"""
@@ -467,13 +472,13 @@ def validate(arg="", **kwargs):
     args = arg.partition(" ")
     c_name = args[0]
     if not c_name:
-        print(error_messages["no_cls_name"])
+        print(error_messages["no_c_name"])
         return
     if c_name not in classes and c_name != "all":
         print(error_messages["no_cls"])
         return
 
-    if kwargs.get("create_only"):
+    if kwargs.get("get_params"):
         return {"c_name": c_name, "params": args[2]}
 
     args = args[2].partition(" ")

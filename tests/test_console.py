@@ -4,7 +4,7 @@ import os
 import unittest
 from io import StringIO
 from unittest.mock import patch
-from models.__init__ import storage
+from models import storage
 from console import HBNBCommand, error_messages, classes
 
 
@@ -24,13 +24,13 @@ class TestConsoleExitOp(unittest.TestCase):
         self.assertEqual(output, "\n")
 
 
-class TestBaseModel(unittest.TestCase):
-    """Testing the BaseModel"""
+class TestUser(unittest.TestCase):
+    """Testing the User"""
 
     @classmethod
     def setUp(cls):
         cls.console = HBNBCommand()
-        cls.c_name = "BaseModel"
+        cls.c_name = "User"
 
     @classmethod
     def tearDown(cls):
@@ -51,7 +51,7 @@ class TestBaseModel(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("create")
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_cls_name"]
+        expected = error_messages["no_c_name"]
         self.assertEqual(output, expected)
 
     def test_create_with_invalid_clsname(self):
@@ -72,8 +72,8 @@ class TestBaseModel(unittest.TestCase):
             self.console.onecmd(f'create {self.c_name} first_name=\"xx\"cc\"')
         output = mock_stdout.getvalue().strip()
         key = f"{self.c_name}.{output}"
-        self.assertIn(key, storage.all().keys())
         obj = storage.all()[key]
+        self.assertIn(key, storage.all())
         self.assertEqual(obj.__dict__["first_name"], "xxcc")
         self.assertIn("first_name", obj.__dict__.keys())
 
@@ -112,7 +112,7 @@ class TestBaseModel(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd("show")
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_cls_name"]
+        expected = error_messages["no_c_name"]
         self.assertEqual(output, expected)
 
     def test_show_with_invalid_clsname(self):
@@ -159,7 +159,7 @@ class TestBaseModel(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"update")
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_cls_name"]
+        expected = error_messages["no_c_name"]
         self.assertEqual(output, expected)
 
     def test_update_with_invalid_clsname(self):
@@ -196,7 +196,7 @@ class TestBaseModel(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"update {self.c_name} {obj.id} name")
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_attr_val"]
+        expected = error_messages["no_attr_value"]
         self.assertEqual(output, expected)
 
     def test_do_count(self):
@@ -219,7 +219,7 @@ class TestBaseModel(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"destroy")
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_cls_name"]
+        expected = error_messages["no_c_name"]
         self.assertEqual(output, expected)
 
     def test_destroy_with_invalid_clsname(self):
@@ -244,13 +244,13 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(output, expected)
 
 
-class TestBaseModelDotNotation(unittest.TestCase):
+class TestUserDotNotation(unittest.TestCase):
     """Testing with the method.notation formate"""
 
     @classmethod
     def setUp(cls):
         cls.console = HBNBCommand()
-        cls.c_name = "BaseModel"
+        cls.c_name = "User"
 
     @classmethod
     def tearDown(cls):
@@ -381,7 +381,7 @@ class TestBaseModelDotNotation(unittest.TestCase):
                 self.console.precmd(f"{self.c_name}.update({obj.id}, age)")
             )
         output = mock_stdout.getvalue().strip()
-        expected = error_messages["no_attr_val"]
+        expected = error_messages["no_attr_value"]
         self.assertEqual(output, expected)
 
     def test_do_count(self):
