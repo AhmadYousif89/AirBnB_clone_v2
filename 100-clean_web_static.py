@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 Deletes out-of-date archives
-fab -f 100-clean_web_static.py do_clean:number=2 -i ssh-key > /dev/null 2>&1
+fab -f 100-clean_web_static.py do_clean:keep=2 -i ssh-key > /dev/null 2>&1
 """
 
 import os
@@ -19,7 +19,7 @@ def do_clean(keep=0):
     If (keep) is 2 or more, it will keep the most recent (n of keep) archives.
     """
     archives_path = "versions"
-    keep = 1 if keep == 0 else keep
+    keep = 1 if int(keep) == 0 else int(keep)
     archives = sorted(os.listdir(archives_path))
     with lcd(archives_path):
         for archive in archives[-keep:]:
