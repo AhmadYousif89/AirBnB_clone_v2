@@ -103,6 +103,7 @@ class TestUser(unittest.TestCase):
 
     def test_show(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"show {self.c_name} {obj.id}")
             output = mock_stdout.getvalue().strip()
@@ -131,6 +132,7 @@ class TestUser(unittest.TestCase):
 
     def test_update(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"update {self.c_name} {obj.id} name \"x\""
             self.console.onecmd(cmd)
@@ -139,6 +141,7 @@ class TestUser(unittest.TestCase):
 
     def test_update_with_extra_attrs(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"update {self.c_name} {obj.id} age \"20\" name \"x\""
             self.console.onecmd(cmd)
@@ -149,6 +152,7 @@ class TestUser(unittest.TestCase):
 
     def test_update_with_dict(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"update {self.c_name} {obj.id} {{\"email\": \"x@g.c\"}}"
             self.console.onecmd(cmd)
@@ -185,6 +189,7 @@ class TestUser(unittest.TestCase):
 
     def test_update_without_attrname(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"update {self.c_name} {obj.id} ''")
         output = mock_stdout.getvalue().strip()
@@ -193,6 +198,7 @@ class TestUser(unittest.TestCase):
 
     def test_update_without_attrvalue(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(f"update {self.c_name} {obj.id} name")
         output = mock_stdout.getvalue().strip()
@@ -287,6 +293,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_show(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(
                 self.console.precmd(f"{self.c_name}.show({obj.id})")
@@ -317,6 +324,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_update(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"{self.c_name}.update({obj.id}, name \"x\")"
             self.console.onecmd(self.console.precmd(cmd))
@@ -325,6 +333,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_update_with_extra_attrs(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"{self.c_name}.update({obj.id}, age \"20\", name \"x\")"
             self.console.onecmd(self.console.precmd(cmd))
@@ -335,6 +344,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_update_with_dict(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()):
             cmd = f"{self.c_name}.update({obj.id}, {{\"email\": \"x@g.c\"}})"
             self.console.onecmd(self.console.precmd(cmd))
@@ -366,6 +376,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_update_without_attrname(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(
                 self.console.precmd(f"{self.c_name}.update({obj.id}, '')")
@@ -376,6 +387,7 @@ class TestUserDotNotation(unittest.TestCase):
 
     def test_update_without_attrvalue(self):
         obj = classes[self.c_name]()
+        obj.save()
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
             self.console.onecmd(
                 self.console.precmd(f"{self.c_name}.update({obj.id}, age)")
