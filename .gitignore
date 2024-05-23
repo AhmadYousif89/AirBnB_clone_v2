@@ -3,3 +3,4 @@ venv
 versions
 main.py
 *.sql
+fab*
