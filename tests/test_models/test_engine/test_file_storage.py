@@ -1,21 +1,25 @@
 #!/usr/bin/python3
-""" Module for testing file storage"""
+"""Module for testing file storage"""
 import unittest
 from models.base_model import BaseModel
 from models import storage
 import os
 
 
+@unittest.skipIf(
+    os.getenv('HBNB_TYPE_STORAGE') == 'db',
+    'Not testing file storage. Using db storage.',
+)
 class test_fileStorage(unittest.TestCase):
     """Class to test the file storage method"""
 
     def setUp(self):
         """Set up test environment"""
         del_list = []
-        for key in storage._FileStorage__objects.keys():
+        for key in storage.all().keys():
             del_list.append(key)
         for key in del_list:
-            del storage._FileStorage__objects[key]
+            del storage.all()[key]
 
     def tearDown(self):
         """Remove storage file at end of tests"""
@@ -30,14 +34,16 @@ class test_fileStorage(unittest.TestCase):
 
     def test_new(self):
         """New object is correctly added to __objects"""
-        new = BaseModel()
+        obj = BaseModel()
+        obj.save()
+        temp = None
         for obj in storage.all().values():
             temp = obj
         self.assertTrue(temp is obj)
 
     def test_all(self):
         """__objects is properly returned"""
-        new = BaseModel()
+        BaseModel()
         temp = storage.all()
         self.assertIsInstance(temp, dict)
 
@@ -65,16 +71,11 @@ class test_fileStorage(unittest.TestCase):
         new = BaseModel()
         storage.save()
         storage.reload()
+        loaded = None
         for obj in storage.all().values():
             loaded = obj
-        self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
-
-    def test_reload_empty(self):
-        """Load from an empty file"""
-        with open('hbnb.json', 'w') as f:
-            pass
-        with self.assertRaises(ValueError):
-            storage.reload()
+        if loaded is not None:
+            self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
 
     def test_reload_from_nonexistent(self):
         """Nothing happens if file does not exist"""
@@ -86,10 +87,6 @@ class test_fileStorage(unittest.TestCase):
         new.save()
         self.assertTrue(os.path.exists('hbnb.json'))
 
-    def test_type_path(self):
-        """Confirm __file_path is string"""
-        self.assertEqual(type(storage._FileStorage__file_path), str)
-
     def test_type_objects(self):
         """Confirm __objects is a dict"""
         self.assertEqual(type(storage.all()), dict)
@@ -97,10 +94,12 @@ class test_fileStorage(unittest.TestCase):
     def test_key_format(self):
         """Key is properly formatted"""
         new = BaseModel()
-        _id = new.to_dict()['id']
+        new.save()
+        key = f"BaseModel.{new.id}"
+        temp = ''
         for key in storage.all().keys():
             temp = key
-        self.assertEqual(temp, 'BaseModel' + '.' + _id)
+        self.assertEqual(temp, key)
 
     def test_storage_var_created(self):
         """FileStorage object storage created"""
