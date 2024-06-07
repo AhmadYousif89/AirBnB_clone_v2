@@ -20,11 +20,11 @@ def do_pack():
     """making an archive on web_static folder"""
     time = datetime.now()
     timestamp = time.strftime("%Y%m%d%H%M%S")
-    archive_name = f'{src_folder}_{timestamp}.tgz'
+    archive_name = '{}_{}.tgz'.format(src_folder, timestamp)
     save_path = join(dest_folder, archive_name)
     try:
-        local(f'mkdir -p {dest_folder}')
-        local(f'tar -cvzf {save_path} {src_folder}')
+        local('mkdir -p {}'.format(dest_folder))
+        local('tar -cvzf {} {}'.format(save_path, src_folder))
         return archive_name
     except Exception:
         return None
@@ -32,23 +32,24 @@ def do_pack():
 
 def do_deploy(archive_path):
     """Uploads an archive to the web servers"""
-    archive_fullpath = f'{dest_folder}/{archive_path}'
+    archive_fullpath = '{}/{}'.format(dest_folder, archive_path)
     if not exists(archive_fullpath):
         return False
 
     archive_name = archive_path.split('.')[0]  # web_static_20240505004540
-    archive_tmp_path = f"/tmp/{archive_path}"
-    release_path = f"/data/web_static/releases/{archive_name}"
+    archive_tmp_path = "/tmp/{}".format(archive_path)
+    release_path = "/data/web_static/releases/{}".format(archive_name)
 
     try:
         put(archive_fullpath, archive_tmp_path)
-        run(f"mkdir -p {release_path}")
-        unpack_archive = f'\
-            tar -xzf {archive_tmp_path} -C {release_path} --strip-components=1'
-        run(unpack_archive)
-        run(f"rm {archive_tmp_path}")
-        run(f"rm -rf /data/web_static/current")
-        run(f"ln -sf {release_path} /data/web_static/current")
+        run("mkdir -p {}".format(release_path))
+        unpack = 'tar -xzf {} -C {} --strip-components=1'.format(
+            archive_tmp_path, release_path
+        )
+        run(unpack)
+        run("rm {}".format(archive_tmp_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -sf {} /data/web_static/current".format(release_path))
         return True
     except Exception:
         return False

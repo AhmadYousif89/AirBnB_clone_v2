@@ -18,20 +18,21 @@ def do_deploy(archive_path):
         return False
 
     archive_fullname = archive_path.split('/')[-1]
-    archive_tmp_path = f"/tmp/{archive_fullname}"
+    archive_tmp_path = "/tmp/{}".format(archive_fullname)
     archive_name = archive_fullname.split('.')[0]
-    release_path = f"/data/web_static/releases/{archive_name}"
+    release_path = "/data/web_static/releases/{}".format(archive_name)
 
     try:
         put(archive_path, archive_tmp_path)
         # ex: /data/web_static/releases/web_static_20240505004540
-        run(f"mkdir -p {release_path}")
-        unpack = f'\
-            tar -xzf {archive_tmp_path} -C {release_path} --strip-components=1'
+        run("mkdir -p {}".format(release_path))
+        unpack = 'tar -xzf {} -C {} --strip-components=1'.format(
+            archive_tmp_path, release_path
+        )
         run(unpack)
-        run(f"rm {archive_tmp_path}")
-        run(f"rm -rf /data/web_static/current")
-        run(f"ln -sf {release_path} /data/web_static/current")
+        run("rm {}".format(archive_tmp_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -sf {} /data/web_static/current".format(release_path))
         return True
     except Exception:
         return False

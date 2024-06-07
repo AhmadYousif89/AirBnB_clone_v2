@@ -14,11 +14,11 @@ def do_pack():
     timestamp = time.strftime("%Y%m%d%H%M%S")
     src_folder = 'web_static'
     dest_folder = 'versions'
-    archive_name = f'{src_folder}_{timestamp}.tgz'
-    save_path = f'{dest_folder}/{archive_name}'
+    archive_name = '{}_{}.tgz'.format(src_folder, timestamp)
+    save_path = '{}/{}'.format(dest_folder, archive_name)
     try:
-        local(f'mkdir -p {dest_folder}')
-        local(f'tar -cvzf {save_path} {src_folder}')
+        local('mkdir -p {}'.format(dest_folder))
+        local('tar -cvzf {} {}'.format(save_path, src_folder))
         return archive_name
     except Exception:
         return None

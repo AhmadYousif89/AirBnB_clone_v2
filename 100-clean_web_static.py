@@ -23,11 +23,11 @@ def do_clean(keep=0):
     archives = sorted(os.listdir(archives_path))
     with lcd(archives_path):
         for archive in archives[-keep:]:
-            local(f"rm -rf ./{archive}")
+            local("rm -rf ./{}".format(archive))
 
     releases_path = "/data/web_static/releases"
     with cd(releases_path):
         output = run("ls -tr").split()
         archives = [archive for archive in output if "web_static" in archive]
         for archive in archives[-keep:]:
-            run(f"rm -rf ./{archive}")
+            run("rm -rf ./{}".format(archive))

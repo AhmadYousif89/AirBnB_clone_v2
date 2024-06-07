@@ -3,8 +3,8 @@
 import os
 import unittest
 from io import StringIO
-from unittest.mock import patch
 from models import storage
+from unittest.mock import patch
 from console import HBNBCommand, error_messages, classes
 
 
